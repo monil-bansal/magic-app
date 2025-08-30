@@ -1,0 +1,139 @@
+
+<html >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spacebar Audio Player</title>
+    <!-- Tailwind CSS CDN for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            transition: background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-gray-800">
+    <div class="max-w-md w-full mx-4 bg-white p-8 rounded-2xl shadow-xl text-center">
+        <!-- Main heading for the app -->
+        <h1 class="text-4xl font-bold mb-4 text-slate-900">Audio Player</h1>
+        
+        <!-- Instructions for the user -->
+        <p class="text-lg mb-6 text-gray-600">
+            Press the <kbd class="px-2 py-1 bg-gray-200 rounded-lg text-sm font-semibold border border-gray-300">Spacebar</kbd> or tap the screen once to play the main sound. Double-tap to play a different sound.
+        </p>
+        <!-- Status message area -->
+        <div id="status-message" class="mt-8 text-md font-medium text-gray-500 min-h-[1.5rem]"></div>
+    </div>
+    <script>
+        // The main audio element for single taps/spacebar presses
+        const singleTapAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+        
+        // The second audio element for double taps
+        const doubleTapAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
+        // Get the status message div
+        const statusMessage = document.getElementById('status-message');
+        
+        let lastTouchTime = -500; // Tracks the time of the last touch for double-tap detection
+let lastSingleTouch = -500;
+let clickTimer = null;
+        // This function plays the single-tap audio
+        function playSingleTapAudio() {
+            
+
+            if (!singleTapAudio.paused) {
+                singleTapAudio.pause();
+                singleTapAudio.currentTime = 0;
+return;
+            }
+            singleTapAudio.play()
+                .then(() => {
+                    statusMessage.textContent = 'Playing main audio...';
+                })
+                .catch(error => {
+                    console.error('Failed to play audio:', error);
+                    statusMessage.textContent = 'Error: Could not play audio.';
+                });
+        }
+        
+        // This function plays the double-tap audio
+        function playDoubleTapAudio() {
+             if (!doubleTapAudio.paused) {
+                doubleTapAudio.pause();
+                doubleTapAudio.currentTime = 0;
+                return;
+            }
+            doubleTapAudio.play()
+                .then(() => {
+                    statusMessage.textContent = 'Playing double-tap audio...';
+                })
+                .catch(error => {
+                    console.error('Failed to play audio:', error);
+                    statusMessage.textContent = 'Error: Could not play audio.';
+                });
+        }
+        // Event listener for keyboard presses (for desktop)
+        window.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                event.preventDefault();
+                playSingleTapAudio();
+            }
+        });
+        // Event listener for touch taps (for mobile)
+        document.body.addEventListener('touchstart', (event) => {
+	
+		console.log("monil");
+            const currentTime = new Date().getTime();
+		console.log(currentTime);
+
+		console.log(lastTouchTime);
+            const timeDiff = currentTime - lastTouchTime;
+
+		console.log(timeDiff);
+            // Check if it's a double-tap (within 300ms)
+            if (timeDiff > 0 && timeDiff < 300) {
+                event.preventDefault(); // Prevent default double-tap zoom
+                playDoubleTapAudio();
+            } else {
+                // Otherwise, it's a single tap
+                event.preventDefault();
+                playSingleTapAudio();
+            }
+            lastTouchTime = currentTime;
+
+        });
+        // Event listener for double-click on desktop
+        document.body.addEventListener('dblclick', (event) => {
+if (clickTimer) {
+        clearTimeout(clickTimer); // cancel single click
+        clickTimer = null;
+      }
+            event.preventDefault();
+            playDoubleTapAudio();
+        });
+document.body.addEventListener('click', (event) => {
+if (clickTimer) clearTimeout(clickTimer);
+
+      clickTimer = setTimeout(() => {
+       event.preventDefault();
+            playSingleTapAudio();
+        clickTimer = null;
+      }, 250); // delay long enough to catch a dblclick
+            
+        });
+        // Listen for when the main audio ends
+        singleTapAudio.addEventListener('ended', () => {
+            statusMessage.textContent = 'Main audio playback finished.';
+        });
+        
+        // Listen for when the double-tap audio ends
+        doubleTapAudio.addEventListener('ended', () => {
+            statusMessage.textContent = 'Double-tap audio playback finished.';
+        });
+    </script>
+</body>
+</html
+
+
