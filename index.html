@@ -76,7 +76,13 @@ return;
         }
         // Event listener for keyboard presses (for desktop)
         window.addEventListener('keydown', (event) => {
-            if (event.code === 'Space') {
+            if (event.code === 'a') {
+                event.preventDefault();
+                playSingleTapAudio();
+            }
+        });
+		window.addEventListener('keydown', (event) => {
+            if (event.code === 'b') {
                 event.preventDefault();
                 playSingleTapAudio();
             }
